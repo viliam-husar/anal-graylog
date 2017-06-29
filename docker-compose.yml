@@ -1,0 +1,46 @@
+version: '3.0'
+services:
+  mongo:
+    image: "mongo:3"
+    volumes:
+      - ./volumes/mongo/data/db:/data/db
+  # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-cluster-composefile
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.2
+    environment:
+      - "cluster.name=graylog"
+      - "bootstrap.memory_lock=true"
+      - "xpack.security.enabled=false"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch"
+      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./volumes/elasticsearch/usr/share/elasticsearch/data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+
+  # http://docs.graylog.org/en/latest/pages/installation/docker.html
+  # https://github.com/Graylog2/graylog2-server/blob/234fb5f/UPGRADING.rst#graylog-switches-to-elasticsearch-http-client
+  graylog:
+    image: graylog2/server:2.3.0-beta.1-2
+    volumes:
+      - ./volumes/graylog/usr/share/graylog/data/journal:/usr/share/graylog/data/journal
+    environment:
+      GRAYLOG_ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      GRAYLOG_ELASTICSEARCH_VERSION: 5
+      GRAYLOG_PASSWORD_SECRET: somepasswordpepper
+      GRAYLOG_ROOT_PASSWORD_SHA2: 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      GRAYLOG_WEB_ENDPOINT_URI: http://127.0.0.1:9000/api
+      GRAYLOG_MESSAGE_JOURNAL_MAX_SIZE: 30gb
+      GRAYLOG_SERVER_JAVA_OPTS: -Xms2g -Xmx4g -XX:NewRatio=1 -XX:MaxMetaspaceSize=256m -server -XX:+ResizeTLAB -XX:+UseConcMarkSweepGC -XX:+CMSConcurrentMTEnabled -XX:+CMSClassUnloadingEnabled -XX:+UseParNewGC -XX:-OmitStackTraceInFastThrow
+    links:
+      - mongo:mongo
+      - elasticsearch:elasticsearch
+    ports:
+      - "9000:9000"
+      - "12201/udp:12201/udp"
+      - "1514/udp:1514/udp"
+      - "5500-5600:5500-5600"
