@@ -6,7 +6,7 @@ services:
       - ./volumes/mongo/data/db:/data/db
   # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-cluster-composefile
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.5.0
     environment:
       - "cluster.name=graylog"
       - "bootstrap.memory_lock=true"
@@ -25,7 +25,7 @@ services:
   # http://docs.graylog.org/en/latest/pages/installation/docker.html
   # https://github.com/Graylog2/graylog2-server/blob/234fb5f/UPGRADING.rst#graylog-switches-to-elasticsearch-http-client
   graylog:
-    image: graylog2/server:2.3.0-beta.1-2
+    image: graylog2/server:2.3.0-1
     volumes:
       - ./volumes/graylog/usr/share/graylog/data/journal:/usr/share/graylog/data/journal
     environment:

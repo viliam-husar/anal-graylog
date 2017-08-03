@@ -1,6 +1,1 @@
-volumes/elasticsearch/usr/share/elasticsearch/data/*
-!volumes/elasticsearch/usr/share/elasticsearch/data/.gitkeep
-volumes/graylog/usr/share/graylog/data/journal/*
-!volumes/graylog/usr/share/graylog/data/journal/.gitkeep
-volumes/mongo/data/db/*
-!volumes/mongo/data/db/.gitkeep
+.idea
